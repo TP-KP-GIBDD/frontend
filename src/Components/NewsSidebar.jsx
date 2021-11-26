@@ -3,7 +3,7 @@ import React from "react";
 export default function NewsSidebar() {
   return (
     <div>
-      <div className="news-container">
+      {/* <div className="news-container">
         <div className="news-main">
           <div className="day-item"></div>
           <div className="day-item"></div>
@@ -14,7 +14,7 @@ export default function NewsSidebar() {
           <div className="sidebar-item"></div>
           <div className="sidebar-item"></div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

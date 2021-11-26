@@ -1,4 +1,14 @@
+import {
+  AppBar,
+  appBarClasses,
+  Button,
+  Toolbar,
+  Typography,
+  IconButton,
+  Box,
+} from "@mui/material";
 import React from "react";
+import { Routes, Route, NavLink, Link } from "react-router-dom";
 
 export default function Header() {
   return (
@@ -10,16 +20,24 @@ export default function Header() {
         <div className="header-nav">
           <ul>
             <li>
-              <a href="#" className="btn"></a>Главная
+              <a href="/home" className="btn">
+                Главная
+              </a>
             </li>
             <li>
-              <a href="#" className="btn"></a>Контакты
+              <a href="/contacts" className="btn">
+                Контакты
+              </a>
             </li>
             <li>
-              <a href="#" className="btn"></a>Сервисы
+              <a href="/services" className="btn">
+                Сервисы
+              </a>
             </li>
             <li>
-              <a href="#" className="btn"></a>Войти
+              <a href="/login" className="btn">
+                Войти
+              </a>
             </li>
           </ul>
         </div>
