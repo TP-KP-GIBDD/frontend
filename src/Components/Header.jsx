@@ -20,7 +20,7 @@ export default function Header() {
         <div className="header-nav">
           <ul>
             <li>
-              <a href="/home" className="btn">
+              <a href="/" className="btn">
                 Главная
               </a>
             </li>

@@ -5,31 +5,33 @@ import NewsList from "./Components/NewsList";
 import NewsSidebar from "./Components/NewsSidebar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./Components/Login";
+import Home from "./Pages/Home";
 
 function App() {
   return (
-    <div>
-      <Header />
-      <div className="wrapper">
-        <div className="content">
-          <BrowserRouter>
+    <BrowserRouter>
+      <div>
+        <Header />
+        <div className="wrapper">
+          <div className="content">
             <Routes>
-              {/* <Route exact path="/home" component={Home} />
-                <Route exact path="/contacts" component={Contacts} /> */}
-              <Route exact path="/services" element={<Services />} />
-              <Route exact path="/login" element={<Login />} />
+              <Route exact path="/" element={<Home />} />
+              {/* <Route exact path="/contacts" component={Contacts} /> */}
+              <Route path="/services" element={<Services />} />
+              <Route path="/login" element={<Login />} />
             </Routes>
-          </BrowserRouter>
-          {/* <div>
+
+            {/* <div>
             <h1 className="news">Новости Госавтоинспекции</h1>
           </div>
           <div className="news-content">
             <NewsList />
             <NewsSidebar />
           </div> */}
+          </div>
         </div>
       </div>
-    </div>
+    </BrowserRouter>
   );
 }
 
