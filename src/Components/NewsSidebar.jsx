@@ -1,17 +1,83 @@
-import React from "react";
+import React from 'react';
 
 export default function NewsSidebar() {
   return (
     <div>
       <div className="news-container">
         <div className="news-main">
-          <div className="day-item"></div>
-          <div className="day-item"></div>
-          <div className="day-item"></div>
-          <div className="day-item"></div>
+          <div className="day-item">
+            <div className="day-heading">
+              <div className="date-number">20 ноября</div>
+              <div className="news-heading">
+                заголовок заголовок заголовок заголовок заголовок заголовок
+              </div>
+            </div>
+            <div className="day-news">
+              текст текст текст текст текст текст текст текст текст текст текст
+              текст текст текст текст текст текст текст текст текст текст текст
+              текст текст текст текст текст текст текст текст текст текст текст
+              текст текст текст текст текст текст текст текст текст текст текст
+              текст текст текст текст текст текст текст текст текст текст текст
+              текст текст текст текст текст
+            </div>
+          </div>
+          <div className="day-item">
+            <div className="day-heading">
+              <div className="date-number">17 ноября</div>
+              <div className="news-heading">
+                заголовок заголовок заголовок заголовок заголовок заголовок
+              </div>
+            </div>
+            <div className="day-news">
+              текст текст текст текст текст текст текст текст текст текст текст
+              текст текст текст текст текст текст текст текст текст текст текст
+              текст текст текст текст текст текст текст текст текст текст текст
+              текст текст текст текст текст текст текст текст текст текст текст
+              текст текст текст текст текст текст текст текст текст текст текст
+              текст текст текст текст текст
+            </div>
+          </div>
+          <div className="day-item">
+            <div className="day-heading">
+              <div className="date-number">15 ноября</div>
+              <div className="news-heading">
+                заголовок заголовок заголовок заголовок заголовок заголовок
+              </div>
+            </div>
+            <div className="day-news">
+              текст текст текст текст текст текст текст текст текст текст текст
+              текст текст текст текст текст текст текст текст текст текст текст
+              текст текст текст текст текст текст текст текст текст текст текст
+              текст текст текст текст текст текст текст текст текст текст текст
+              текст текст текст текст текст текст текст текст текст текст текст
+              текст текст текст текст текст
+            </div>
+          </div>
+          <div className="day-item">
+            <div className="day-heading">
+              <div className="date-number">10 ноября</div>
+              <div className="news-heading">
+                заголовок заголовок заголовок заголовок заголовок заголовок
+              </div>
+            </div>
+            <div className="day-news">
+              текст текст текст текст текст текст текст текст текст текст текст
+              текст текст текст текст текст текст текст текст текст текст текст
+              текст текст текст текст текст текст текст текст текст текст текст
+              текст текст текст текст текст текст текст текст текст текст текст
+              текст текст текст текст текст текст текст текст текст текст текст
+              текст текст текст текст текст
+            </div>
+          </div>
         </div>
         <div className="news-sidebar">
-          <div className="sidebar-item"></div>
+          <div className="sidebar-item">
+            <div className="umvd">
+              УГИБДД УМВД РОССИИ ПО ВЛАДИМИРСКОЙ ОБЛАСТИ
+            </div>
+            <div className="dutysection">Дежурная часть:</div>
+            <div className="number">(4922) 54-16-65</div>
+          </div>
           <div className="sidebar-item"></div>
         </div>
       </div>
