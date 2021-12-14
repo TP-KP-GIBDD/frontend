@@ -8,6 +8,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import { Link } from 'react-router-dom';
+import Loader from './Loader';
 
 export default function Profile() {
   const { inputValue } = useContext(UserContext);
@@ -109,9 +110,11 @@ export default function Profile() {
           </Button>
         </Link>
         <h2 class="profile-head">Записи</h2>
-        <Button type={'submit'} variant="contained" size="small">
-          Мои заявки
-        </Button>
+        <Link to="/AppointServiceList">
+          <Button type={'submit'} variant="contained" size="small">
+            Мои заявки
+          </Button>
+        </Link>
       </div>
     </div>
   );

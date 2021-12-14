@@ -1,5 +1,6 @@
-import React from 'react';
-import Button from '@mui/material/Button';
+import React from "react";
+import Button from "@mui/material/Button";
+import { Link } from "react-router-dom";
 
 export default function Employee() {
   return (
@@ -12,17 +13,26 @@ export default function Employee() {
       </div>
       <h2 class="profile-head">Автомобиль</h2>
       <div className="employee-head">
-        <Button className="car-btn" variant="outlined" size="small">
-          Изменить автомобиль
-        </Button>
-        <Button className="car-btn" variant="outlined" size="small">
-          Зарегистрировать автомобиль
-        </Button>
-        <Button className="car-btn" variant="outlined" size="small">
-          Удалить автомобиль
-        </Button>
+        <Link to="/CarCrud">
+          <Button className="car-btn" variant="outlined" size="small">
+            Все автомобили
+          </Button>
+        </Link>
+        <Link to="/CarRegistration">
+          <Button className="car-btn" variant="outlined" size="small">
+            Зарегистрировать автомобиль
+          </Button>
+        </Link>
       </div>
       <h2 class="profile-head">Штрафы</h2>
+      <div className="employee-head">
+        <Button className="car-btn" variant="outlined" size="small">
+          Добавить
+        </Button>
+        <Button className="car-btn" variant="outlined" size="small">
+          Оплачен
+        </Button>
+      </div>
     </div>
   );
 }

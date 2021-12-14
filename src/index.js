@@ -9,6 +9,7 @@ import { useState } from 'react';
 export default function Main() {
   const [roleId, setRoleId] = useState(0);
   const [inputValue, setInputValue] = useState({
+    userId: 1,
     name: 'Глеб',
     secondName: 'Лабутенко',
     middleName: 'Александрович',
