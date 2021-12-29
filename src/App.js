@@ -1,8 +1,6 @@
 import './App.css';
 import Header from './Components/Header';
 import Services from './Components/Services';
-import NewsList from './Components/NewsList';
-import NewsSidebar from './Components/NewsSidebar';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './Components/Login';
 import Home from './Pages/Home';
@@ -17,8 +15,15 @@ import CarDetails from './Components/Auto/CarDetails';
 import CarUpdate from './Components/Auto/CarUpdate';
 import AppointServiceList from './Pages/AppointServiceList';
 import AppointDetails from './Pages/AppointDetails';
+import EmployeeAppointServiceList from './Pages/EmployeeAppointServiceList';
+import EmployeeDetailsAppointService from './Pages/EmployeeDetailsAppointService';
+import { useEffect, useContext } from 'react';
+import UserContext from './Context';
+import Fines from './Components/Fines/Fines';
 
 function App() {
+  const { roleId, setRoleId } = useContext(UserContext);
+
   return (
     <BrowserRouter>
       <div>
@@ -44,13 +49,23 @@ function App() {
                 path="AppointServiceList"
                 element={<AppointServiceList />}
               />
+              <Route
+                path="/EmployeeAppointServiceList"
+                element={<EmployeeAppointServiceList />}
+              />
               <Route path="AppointDetails/:id" element={<AppointDetails />} />
+
+              <Route
+                path="/EmployeeDetailsAppointService/:id"
+                element={<EmployeeDetailsAppointService />}
+              />
 
               <Route path="/carregistration" element={<CarRegistration />} />
               <Route path="/carcrud" element={<CarCrud />} />
               <Route path="/cardetails/:id" element={<CarDetails />} />
               <Route path="/cardetails" element={<CarDetails />} />
               <Route path="/carupdate/:id" element={<CarUpdate />} />
+              <Route path="/fines" element={<Fines />} />
             </Routes>
           </div>
         </div>

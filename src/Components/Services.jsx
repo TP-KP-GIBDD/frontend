@@ -1,8 +1,8 @@
 import React from 'react';
 import Car from '../Assets/Car.png';
 import CalendarPlus from '../Assets/CalendarPlus.png';
-import Driver from '../Assets/Driver.png';
 import Law from '../Assets/Law.png';
+import dtp from '../Assets/dtp.png';
 import { Link } from 'react-router-dom';
 
 export default function Services() {
@@ -21,8 +21,8 @@ export default function Services() {
           <p className="service-item-text">Проверка автомобиля</p>
         </div>
         <div className="service-item">
-          <img src={Driver} />
-          <p className="service-item-text">Проверка водителя</p>
+          <img src={dtp} />
+          <p className="service-item-text">ДТП</p>
         </div>
         <Link to="/registrationAppoint">
           <div className="service-item">

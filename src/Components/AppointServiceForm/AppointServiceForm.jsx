@@ -2,7 +2,7 @@ import { React, useEffect, useState } from 'react';
 import axios from 'axios';
 import { APPOINT_API_URL } from '../../Api/Api';
 import DropDownList from './DropDownList';
-import Map from './Map';
+import MyMap from './MyMap';
 import TrueStep from './TrueStep';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
@@ -11,8 +11,10 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
+import { Placemark, YMaps } from 'react-yandex-maps';
+import jwt from 'jwt-decode';
 
-export default function AppointServiceForm() {
+export default function AppointServiceForm(props) {
   const [inputValues, setInputValues] = useState({
     region: null,
     gibddOffice: null,
@@ -27,28 +29,29 @@ export default function AppointServiceForm() {
 
   const [date, setDate] = useState(Date.now());
 
+  const [centerCoords, setCenterCoords] = useState({
+    lat: 55.751574,
+    lon: 37.573856,
+  });
+
   useEffect(() => {
     fetchTimesByDate(date);
   }, [date]);
-
-  useEffect(() => {
-    console.log(inputValues);
-  }, [inputValues.dateTime]);
 
   useEffect(() => {
     fetchOfficesByRegionId(inputValues.region);
 
     setCenterCoords({
       ...centerCoords,
-      lat: regions[inputValues.region]?.lat,
-      lon: regions[inputValues.region]?.lon,
+      lat: regions[inputValues.region - 1]?.lat,
+      lon: regions[inputValues.region - 1]?.lon,
     });
+    console.log(regions[inputValues.region]);
   }, [inputValues.region]);
 
   useEffect(() => {
     fetchRegions();
     fetchServices();
-    console.log('Дата ' + date);
   }, []);
 
   const fetchRegions = () => {
@@ -78,7 +81,6 @@ export default function AppointServiceForm() {
         setTimes(responce.data);
       })
       .catch(setTimes([]));
-    console.log('Дата ' + date);
   };
 
   const handleChangeRegion = (e) => {
@@ -89,6 +91,10 @@ export default function AppointServiceForm() {
     setInputValues({ ...inputValues, gibddOffice: e.target.value });
   };
 
+  const handleChangeOfficeMap = (officeId) => {
+    setInputValues({ ...inputValues, gibddOffice: officeId });
+  };
+
   const handleChangeService = (e) => {
     setInputValues({ ...inputValues, service: e.target.value });
   };
@@ -97,16 +103,27 @@ export default function AppointServiceForm() {
     setDate(e.target.value);
   };
 
-  const hundleSubmit = () => {
-    axios
-      .post(APPOINT_API_URL + `Main`, {
-        CarOwnerId: 2,
-        GibddOfficeId: inputValues.gibddOffice,
-        ServiceId: inputValues.service,
-        DateTimeId: inputValues.dateTime,
-      })
-      .then((response) => console.log(response))
-      .catch((e) => alert(e));
+  const hundleSubmit = (e) => {
+    e.preventDefault();
+
+    const userId = Number(jwt(localStorage.getItem('token')).id);
+    console.log(userId);
+    if (userId !== null) {
+      axios
+        .post(APPOINT_API_URL + `Main`, {
+          CarOwnerId: userId,
+          RegionId: 1,
+          GibddOfficeId: inputValues.gibddOffice,
+          ServiceId: inputValues.service,
+          DateTimeId: inputValues.dateTime,
+        })
+        .then((response) => {
+          window.location = '/AppointServiceList';
+        })
+        .catch((e) => alert(e));
+    } else {
+      alert('ERROR');
+    }
   };
 
   // Stepper functions
@@ -124,11 +141,6 @@ export default function AppointServiceForm() {
     setActiveStep(0);
   };
 
-  const [centerCoords, setCenterCoords] = useState({
-    lat: 16,
-    lon: 12,
-  });
-
   return (
     <form onSubmit={hundleSubmit}>
       <TrueStep
@@ -142,7 +154,7 @@ export default function AppointServiceForm() {
           <StepContent>
             <Typography>
               {/* Step 1 */}
-
+              {console.log(regions)}
               <div className="Stepper-step-content">
                 <DropDownList
                   items={regions}
@@ -151,12 +163,41 @@ export default function AppointServiceForm() {
                   onChange={handleChangeRegion}
                 />
 
-                <Map Lat={centerCoords.lat} Lon={centerCoords.lon} />
+                <MyMap
+                  centerLat={centerCoords.lat}
+                  centerLon={centerCoords.lon}
+                  zoom={9}
+                >
+                  {offices.map((item) => {
+                    return (
+                      <Placemark
+                        onClick={() => {
+                          setInputValues({
+                            ...inputValues,
+                            gibddOffice: item.id,
+                          });
+                        }}
+                        geometry={[item.lat, item.lon]}
+                        modules={[
+                          'geoObject.addon.balloon',
+                          'geoObject.addon.hint',
+                        ]}
+                        properties={{
+                          // Хинт показывается при наведении мышкой на иконку метки.
+                          hintContent: item.name,
+                          // Балун откроется при клике по метке.
+                          balloonContent: item.name,
+                        }}
+                        options={{}}
+                      />
+                    );
+                  })}
+                </MyMap>
 
                 <DropDownList
                   items={offices}
                   title="Подразделение ГИБДД"
-                  value={inputValues.office}
+                  value={inputValues.gibddOffice}
                   onChange={handleChangeOffice}
                 />
               </div>

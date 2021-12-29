@@ -102,7 +102,6 @@ export default function Profile() {
         <Link to="/ProfileUpdate">
           <Button
             type={'submit'}
-            variant="contained"
             // href="/ProfileUpdate"
             size="small"
           >
@@ -111,7 +110,7 @@ export default function Profile() {
         </Link>
         <h2 class="profile-head">Записи</h2>
         <Link to="/AppointServiceList">
-          <Button type={'submit'} variant="contained" size="small">
+          <Button type={'submit'} size="small">
             Мои заявки
           </Button>
         </Link>

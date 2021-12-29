@@ -9,6 +9,7 @@ import MyMap from '../Components/AppointServiceForm/MyMap';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { Placemark } from 'react-yandex-maps';
+import TextField from '@mui/material/TextField';
 
 const style = {
   position: 'absolute',
@@ -22,10 +23,11 @@ const style = {
   p: 4,
 };
 
-export default function AppointDetails() {
+export default function EmployeeDetailsAppointService() {
   const [appoint, setAppoint] = useState({
     id: 0,
   });
+
   const pageParams = useParams();
 
   const fetchData = (id) => {
@@ -39,13 +41,32 @@ export default function AppointDetails() {
   };
 
   useEffect(() => {
-    console.log(pageParams.id);
     fetchData(pageParams.id);
   }, []);
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const handleStatus = (e) => {
+    setAppoint({ ...appoint, status: e.target.value });
+    console.log(appoint);
+  };
+
+  const statusSubmit = () => {
+    console.log(appoint.id);
+    console.log(appoint.status);
+    axios
+      .post(
+        APPOINT_API_URL +
+          `Main/SetStatus/${appoint.id}?status=${appoint.status}`
+      )
+      .then((response) => {
+        console.log(response);
+        window.location = '/EmployeeAppointServiceList';
+      })
+      .catch((e) => alert(e));
+  };
 
   return appoint.id !== 0 ? (
     <div className="appointDetails">
@@ -100,7 +121,26 @@ export default function AppointDetails() {
           </ul>
         </div>
       </div>
-      <Link to="/AppointServiceList">
+
+      <TextField
+        className="personal-data-text-field input-status"
+        label="Статус"
+        id="outlined-size-small"
+        defaultValue={appoint.status}
+        onChange={handleStatus}
+        // size="small"
+      />
+      <br />
+      <Button
+        sx={{ marginBottom: 2, marginTop: 2 }}
+        variant="contained"
+        className="input-status"
+        onClick={statusSubmit}
+      >
+        Установить статус
+      </Button>
+      <br />
+      <Link to="/EmployeeAppointServiceList">
         <Button variant="contained">Назад</Button>
       </Link>
     </div>

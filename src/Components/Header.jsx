@@ -11,14 +11,27 @@ import React, { useContext, useState } from 'react';
 import UserContext from '../Context';
 import Avatar from '@mui/material/Avatar';
 import { Link } from 'react-router-dom';
+import logo from '../Assets/logo.png';
 
 export default function Header() {
-  const { roleId } = useContext(UserContext);
+  const { roleId, setRoleId } = useContext(UserContext);
+
+  const hundleOutlog = () => {
+    localStorage.removeItem('token');
+    window.location = '/login';
+  };
+
   return (
     <header className="header">
-      <div className="header-left">
-        <h1 className="logo">ГОСАВТОИНСПЕКЦИЯ</h1>
-      </div>
+      <Link to="/">
+        <div className="header-left">
+          <div className="header-left-1">
+            <img className="logop" src={logo} />
+          </div>
+
+          <h1 className="logo">ГОСАВТОИНСПЕКЦИЯ</h1>
+        </div>
+      </Link>
       <div className="header-right">
         <div className="header-profile">
           {/* {roleId === 0 && (
@@ -31,7 +44,9 @@ export default function Header() {
               Профиль
             </Button>
           )} */}
-          {roleId === 0 && (
+          {(roleId === 'Admin' ||
+            roleId === 'Carowner' ||
+            roleId === 'Inspector') && (
             <Link to="/profile">
               <IconButton
                 className="profile-btn"
@@ -46,7 +61,7 @@ export default function Header() {
         </div>
         <div className="header-nav">
           <ul>
-            {roleId === 0 && (
+            {(roleId === 'Admin' || roleId === 'Inspector') && (
               <li>
                 <Link to="/employee" className="btn">
                   Сотруднику
@@ -63,12 +78,16 @@ export default function Header() {
                 Контакты
               </Link>
             </li>
-            <li>
-              <Link to="/services" className="btn">
-                Сервисы
-              </Link>
-            </li>
-            {roleId !== 0 ? (
+            {(roleId === 'Admin' ||
+              roleId === 'Carowner' ||
+              roleId === 'Inspector') && (
+              <li>
+                <Link to="/services" className="btn">
+                  Сервисы
+                </Link>
+              </li>
+            )}
+            {roleId === '' ? (
               <li>
                 <Link to="/login" className="btn">
                   Войти
@@ -76,7 +95,7 @@ export default function Header() {
               </li>
             ) : (
               <li>
-                <Link to="#" className="btn">
+                <Link to="#" className="btn" onClick={hundleOutlog}>
                   Выйти
                 </Link>
               </li>

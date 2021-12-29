@@ -15,7 +15,7 @@ import { APPOINT_API_URL } from '../Api/Api';
 import Loader from '../Components/Loader';
 import jwt from 'jwt-decode';
 
-export default function AppointServiceList() {
+export default function EmployeeAppointServiceList() {
   const [appoints, setAppoints] = useState([]);
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export default function AppointServiceList() {
 
     if (userId !== null) {
       const resp = axios
-        .get(APPOINT_API_URL + `Main/GetAppointsByCarOwnerId/${userId}`)
+        .get(APPOINT_API_URL + `Main/GetAllAppoints`)
         .then((response) => {
           setAppoints(response.data);
         });
@@ -58,14 +58,16 @@ export default function AppointServiceList() {
 
   return (
     <div>
-      <h1>Мои записи на услуги</h1>
+      <h1>Записи на услуги</h1>
       {appoints.length !== 0 ? (
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
             <TableHead>
               <TableRow>
+                <StyledTableCell align="center">Номер</StyledTableCell>
                 <StyledTableCell>Наименование услуги</StyledTableCell>
                 <StyledTableCell align="center">Дата</StyledTableCell>
+                <StyledTableCell align="center">Фамилия</StyledTableCell>
                 <StyledTableCell align="center">Статус</StyledTableCell>
                 <StyledTableCell align="right"></StyledTableCell>
               </TableRow>
@@ -74,16 +76,20 @@ export default function AppointServiceList() {
               {appoints.map((item) => (
                 <StyledTableRow key={item.name}>
                   <StyledTableCell component="th" scope="row">
+                    {item.id}
+                  </StyledTableCell>
+                  <StyledTableCell component="th" scope="row">
                     {item.service.name}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {new Date(item.serviceDateTime.date).toLocaleDateString()}
                   </StyledTableCell>
+                  <StyledTableCell align="center">{'Иванов'}</StyledTableCell>
                   <StyledTableCell align="center">
                     {item.status}
                   </StyledTableCell>
                   <StyledTableCell align="right">
-                    <Link to={`/AppointDetails/${item.id}`}>
+                    <Link to={`/EmployeeDetailsAppointService/${item.id}`}>
                       <Button>Подробнее</Button>
                     </Link>
                   </StyledTableCell>
