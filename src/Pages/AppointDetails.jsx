@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { Button } from '@mui/material';
 import { Link } from 'react-router-dom';
@@ -9,6 +9,7 @@ import MyMap from '../Components/AppointServiceForm/MyMap';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { Placemark } from 'react-yandex-maps';
+import UserContext from '../Context';
 
 const style = {
   position: 'absolute',
@@ -27,6 +28,8 @@ export default function AppointDetails() {
     id: 0,
   });
   const pageParams = useParams();
+
+  const { inputValue } = useContext(UserContext); // Данные аккаунта
 
   const fetchData = (id) => {
     axios
@@ -87,9 +90,10 @@ export default function AppointDetails() {
       <div className="bottom-content">
         <div className="personal">
           <h3>Личные данные:</h3>
-          <p>Фамилия: </p>
-          <p>Имя: </p>
-          <p>Отчество: </p>
+          <p>Фамилия: {inputValue.name}</p>
+          <p>Имя: {inputValue.secondName}</p>
+          <p>Отчество: {inputValue.middleName}</p>
+          <p>Дата рождения: {inputValue.dateBirth}</p>
         </div>
         <div className="documents-list">
           <h3>Необходимые документы для осуществления услуги:</h3>

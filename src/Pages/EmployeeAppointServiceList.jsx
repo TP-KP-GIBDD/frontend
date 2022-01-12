@@ -30,6 +30,7 @@ export default function EmployeeAppointServiceList() {
         .get(APPOINT_API_URL + `Main/GetAllAppoints`)
         .then((response) => {
           setAppoints(response.data);
+          console.log(response.data);
         });
     } else {
       alert('ERROR');
@@ -65,9 +66,11 @@ export default function EmployeeAppointServiceList() {
             <TableHead>
               <TableRow>
                 <StyledTableCell align="center">Номер</StyledTableCell>
-                <StyledTableCell>Наименование услуги</StyledTableCell>
+                <StyledTableCell align="center">Клиент</StyledTableCell>
+                <StyledTableCell align="center">
+                  Наименование услуги
+                </StyledTableCell>
                 <StyledTableCell align="center">Дата</StyledTableCell>
-                <StyledTableCell align="center">Фамилия</StyledTableCell>
                 <StyledTableCell align="center">Статус</StyledTableCell>
                 <StyledTableCell align="right"></StyledTableCell>
               </TableRow>
@@ -75,21 +78,25 @@ export default function EmployeeAppointServiceList() {
             <TableBody>
               {appoints.map((item) => (
                 <StyledTableRow key={item.name}>
-                  <StyledTableCell component="th" scope="row">
+                  <StyledTableCell component="th" scope="row" align="center">
                     {item.id}
                   </StyledTableCell>
-                  <StyledTableCell component="th" scope="row">
+                  <StyledTableCell component="th" scope="row" align="center">
+                    {item.carOwnerId}
+                  </StyledTableCell>
+                  <StyledTableCell component="th" scope="row" align="center">
                     {item.service.name}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {new Date(item.serviceDateTime.date).toLocaleDateString()}
                   </StyledTableCell>
-                  <StyledTableCell align="center">{'Иванов'}</StyledTableCell>
                   <StyledTableCell align="center">
                     {item.status}
                   </StyledTableCell>
                   <StyledTableCell align="right">
-                    <Link to={`/EmployeeDetailsAppointService/${item.id}`}>
+                    <Link
+                      to={`/EmployeeDetailsAppointService/${item.id}?carOwnerId=${item.carOwnerId}`}
+                    >
                       <Button>Подробнее</Button>
                     </Link>
                   </StyledTableCell>

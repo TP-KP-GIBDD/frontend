@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Button } from '@mui/material';
+import { Navigate, useParams } from 'react-router-dom';
+import {
+  Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+} from '@mui/material';
 import { Link } from 'react-router-dom';
-import { APPOINT_API_URL } from '../Api/Api';
+import { APPOINT_API_URL, AUTH_API_URL } from '../Api/Api';
 import axios from 'axios';
 import Loader from '../Components/Loader';
 import MyMap from '../Components/AppointServiceForm/MyMap';
@@ -10,6 +16,8 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { Placemark } from 'react-yandex-maps';
 import TextField from '@mui/material/TextField';
+import DropDownList from '../Components/AppointServiceForm/DropDownList';
+import { useNavigate } from 'react-router-dom';
 
 const style = {
   position: 'absolute',
@@ -24,17 +32,50 @@ const style = {
 };
 
 export default function EmployeeDetailsAppointService() {
+  const navigate = useNavigate();
+
   const [appoint, setAppoint] = useState({
     id: 0,
   });
 
+  const [personData, setPersonData] = useState({});
+
+  const [allStatuses, setAllStatuses] = useState([
+    'Ожидает выполнение',
+    'Отправлено на обработку',
+    'Отказано',
+    'Выполнено',
+  ]);
+
+  // const [allStatuses, setAllStatuses] = useState([
+  //   { name: 'Ожидает выполнение' },
+  //   { name: 'Отправлено на обработку' },
+  //   { name: 'Отказано' },
+  //   { name: 'Выполнено' },
+  // ]);
+
+  const [status, setStatus] = useState({ name: '' });
+
   const pageParams = useParams();
+  const queryParams = new URLSearchParams(window.location.search);
 
   const fetchData = (id) => {
     axios
       .get(APPOINT_API_URL + `Main/GetAppointById/${id}`)
       .then((resp) => {
         setAppoint(resp.data);
+        console.log(resp.data);
+      })
+      .catch((e) => alert(e));
+
+    axios
+      .get(AUTH_API_URL + `Accounts/${queryParams.get('carOwnerId')}`, {
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      })
+      .then((resp) => {
+        setPersonData(resp.data);
         console.log(resp.data);
       })
       .catch((e) => alert(e));
@@ -49,21 +90,17 @@ export default function EmployeeDetailsAppointService() {
   const handleClose = () => setOpen(false);
 
   const handleStatus = (e) => {
-    setAppoint({ ...appoint, status: e.target.value });
-    console.log(appoint);
+    console.log(e.target.value);
+    setStatus(e.target.value);
   };
 
   const statusSubmit = () => {
     console.log(appoint.id);
     console.log(appoint.status);
     axios
-      .post(
-        APPOINT_API_URL +
-          `Main/SetStatus/${appoint.id}?status=${appoint.status}`
-      )
+      .post(APPOINT_API_URL + `Main/SetStatus/${appoint.id}?status=${status}`)
       .then((response) => {
-        console.log(response);
-        window.location = '/EmployeeAppointServiceList';
+        navigate('/EmployeeAppointServiceList');
       })
       .catch((e) => alert(e));
   };
@@ -108,9 +145,10 @@ export default function EmployeeDetailsAppointService() {
       <div className="bottom-content">
         <div className="personal">
           <h3>Личные данные:</h3>
-          <p>Фамилия: </p>
-          <p>Имя: </p>
-          <p>Отчество: </p>
+          <p>Фамилия: {personData.firstName}</p>
+          <p>Имя: {personData.lastName}</p>
+          <p>Отчество: {personData.middleName}</p>
+          <p>Дата рождения: {personData.birthday}</p>
         </div>
         <div className="documents-list">
           <h3>Необходимые документы для осуществления услуги:</h3>
@@ -122,17 +160,34 @@ export default function EmployeeDetailsAppointService() {
         </div>
       </div>
 
-      <TextField
+      <Box sx={{ Width: 120, maxWidth: 230, marginX: 'auto' }}>
+        <FormControl fullWidth>
+          <InputLabel id="demo-simple-select-label">Статус</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={status}
+            label="Статус"
+            onChange={handleStatus}
+          >
+            {allStatuses.map((item) => (
+              <MenuItem value={item}>{item}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+
+      {/* <TextField
         className="personal-data-text-field input-status"
         label="Статус"
         id="outlined-size-small"
         defaultValue={appoint.status}
         onChange={handleStatus}
         // size="small"
-      />
-      <br />
+      /> */}
+      {/* <br /> */}
       <Button
-        sx={{ marginBottom: 2, marginTop: 2 }}
+        sx={{ marginBottom: 2, marginTop: 2, marginLeft: 0 }}
         variant="contained"
         className="input-status"
         onClick={statusSubmit}

@@ -13,8 +13,11 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { Placemark, YMaps } from 'react-yandex-maps';
 import jwt from 'jwt-decode';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 export default function AppointServiceForm(props) {
+  const navigate = useNavigate;
+
   const [inputValues, setInputValues] = useState({
     region: null,
     gibddOffice: null,
@@ -91,9 +94,9 @@ export default function AppointServiceForm(props) {
     setInputValues({ ...inputValues, gibddOffice: e.target.value });
   };
 
-  const handleChangeOfficeMap = (officeId) => {
-    setInputValues({ ...inputValues, gibddOffice: officeId });
-  };
+  // const handleChangeOfficeMap = (officeId) => {
+  //   setInputValues({ ...inputValues, gibddOffice: officeId });
+  // };
 
   const handleChangeService = (e) => {
     setInputValues({ ...inputValues, service: e.target.value });
@@ -118,7 +121,7 @@ export default function AppointServiceForm(props) {
           DateTimeId: inputValues.dateTime,
         })
         .then((response) => {
-          window.location = '/AppointServiceList';
+          navigate('/AppointServiceList');
         })
         .catch((e) => alert(e));
     } else {

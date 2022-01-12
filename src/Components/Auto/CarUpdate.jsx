@@ -1,96 +1,305 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Button } from '@mui/material';
+import { Button, TextField, Alert } from '@mui/material';
+import { Link, useParams } from 'react-router-dom';
+import DropDownList from '../AppointServiceForm/DropDownList';
+import { useNavigate, pageParams } from 'react-router-dom';
+import axios from 'axios';
+import { AUTO_API_URL } from '../../Api/Api';
 
-export default function CarDetails() {
-  const [cars, setCars] = useState(
-    {
-      id: 1,
-      stateNumber: 'А423РХ33',
-      vinNumber: 'XTA210990Y2766389',
-      brand: 'Toyota',
-      model: 'Mark II',
-      releaseDate: '1990',
-      power: '204',
-      color: 'Черный',
-      bodytype: 'Седан',
-      steeringWheel: 'Правый',
-    },
-    {
-      id: 2,
-      stateNumber: 'А999АА33',
-      vinNumber: 'XTA210990Y2765478',
-      brand: 'Nissan',
-      model: 'Silvia',
-      releaseDate: '1987',
-      power: '247',
-      color: 'Синий',
-      bodytype: 'Седан',
-      steeringWheel: 'Правый',
-    }
-  );
+export default function CarRegistration() {
+  const navigate = useNavigate();
 
   const pageParams = useParams();
 
+  const [inputValues, setInputValues] = useState({
+    stateNumber: '44325',
+    vin: null,
+    brand: null,
+    model: null,
+    year: null,
+    power: null,
+    color: null,
+    bodyTypeId: null,
+    rudderId: null,
+  });
+
+  const fetchCurrentCar = () => {
+    console.log('HEEEY');
+    axios
+      .get(AUTO_API_URL + `GetAvto?id=${pageParams.id}`)
+      .then((resp) => {
+        console.log('resp data');
+        console.log(resp.data);
+        setInputValues({
+          ...inputValues,
+          stateNumber: resp.data.numberAvto,
+          vin: resp.data.vin,
+          brand: resp.data.brandModel.brand.id,
+          model: resp.data.brandModel.id,
+          year: resp.data.year,
+          power: resp.data.power,
+          color: resp.data.color.id,
+          bodyTypeId: resp.data.bodyTypeId,
+          rudderId: resp.data.rudderId,
+        });
+        console.log(inputValues);
+      })
+      .catch((e) => alert(e));
+  };
+
   useEffect(() => {
-    console.log(pageParams);
+    fetchCurrentCar();
+    fetchBrands();
+    fetchColor();
+    fetchBodyTypes();
+    fetchRudders();
   }, []);
+
+  useEffect(() => {
+    fetchModels(inputValues.brand);
+  }, [inputValues.brand]);
+
+  const [brands, setBrands] = useState(['']);
+  const [models, setModels] = useState(['']);
+
+  const [colors, setColors] = useState(['']);
+  const [bodyTypes, setBodyTypes] = useState(['']);
+  const [rudders, setRudders] = useState(['']);
+
+  const fetchBrands = () => {
+    axios
+      .get(AUTO_API_URL + `api/Brand/GetBrands`)
+      .then((resp) => setBrands(resp.data));
+  };
+
+  const fetchModels = (brandId) => {
+    // Метод ModelsByBrandId
+    axios
+      .get(AUTO_API_URL + `api/BrandModel/GetBrandModelByBrandId?id=${brandId}`)
+      .then((resp) => {
+        console.log(resp);
+        setModels(resp.data);
+      });
+  };
+
+  const fetchColor = () => {
+    axios
+      .get(AUTO_API_URL + `api/ColorAvto/GetColorAvtoes`)
+      .then((resp) => setColors(resp.data));
+  };
+
+  const fetchBodyTypes = () => {
+    axios
+      .get(AUTO_API_URL + `GetBodyTypes`)
+      .then((resp) => setBodyTypes(resp.data));
+  };
+
+  const fetchRudders = () => {
+    axios
+      .get(AUTO_API_URL + `GetRudders`)
+      .then((resp) => setRudders(resp.data));
+  };
+
+  const submit = () => {
+    axios
+      .post(
+        AUTO_API_URL +
+          `CreateAvto?NumberAvto=${inputValues.stateNumber}
+          &Vin=${inputValues.vin}
+          &BrandModelId=${inputValues.model}
+          &Year=${inputValues.year}
+          &Power=${inputValues.power}
+          &ColorId=${inputValues.color}
+          &BodyTypeId=${inputValues.bodyTypeId}
+          &RudderId=${inputValues.rudderId}`
+      )
+      .then((resp) => {
+        if (resp.status === 200) {
+          navigate('/CarCrud');
+        } else {
+          alert('Error');
+        }
+      });
+  };
+
+  const handleBrand = (e) => {
+    setInputValues({ ...inputValues, brand: e.target.value });
+  };
+
+  const handleModel = (e) => {
+    setInputValues({ ...inputValues, model: e.target.value });
+  };
+
+  const handleColor = (e) => {
+    setInputValues({ ...inputValues, color: e.target.value });
+  };
+
+  const handleBodyType = (e) => {
+    setInputValues({ ...inputValues, bodyTypeId: e.target.value });
+  };
+
+  const handleRudder = (e) => {
+    setInputValues({ ...inputValues, rudderId: e.target.value });
+  };
+
+  const handleChange = (e) => {
+    console.log(e);
+    switch (e.target.name) {
+      case 'stateNumber':
+        setInputValues({ ...inputValues, stateNumber: e.target.value });
+        break;
+      case 'vin':
+        setInputValues({ ...inputValues, vin: e.target.value });
+        break;
+
+      case 'year':
+        setInputValues({ ...inputValues, year: e.target.value });
+        break;
+      case 'power':
+        setInputValues({ ...inputValues, power: e.target.value });
+        break;
+    }
+  };
 
   return (
     <div>
-      <div class="crud-details-table">
-        <div class="crud-details-head">
-          <div class="crud-details-head-text">№&nbsp;{pageParams.id} </div>
-          <div class="crud-details-head-text-2">
-            Внесение изменений в автомобиль:
-          </div>
+      <Link to="/employee">
+        <Button type={'submit'} size="small">
+          Сотруднику
+        </Button>
+      </Link>
+      <div className="personal-data">
+        <div>
+          <span>
+            <TextField
+              className="personal-data-text-field"
+              label="Гос. Знак"
+              id="outlined-size-small"
+              name="stateNumber"
+              defaultValue={inputValues.stateNumber}
+              size="small"
+              sx={{ width: 300, height: 40 }}
+              onChange={handleChange}
+            />
+          </span>
+          <br />
+          <span>
+            <TextField
+              className="personal-data-text-field"
+              label="VIN Номер"
+              id="outlined-size-small"
+              name="vin"
+              defaultValue={inputValues.vin}
+              size="small"
+              sx={{ width: 300, marginBottom: 2 }}
+              onChange={handleChange}
+            />
+          </span>
+          <br />
+
+          <DropDownList
+            items={brands}
+            title="Марка"
+            name="brand"
+            value={inputValues.brand}
+            size="small"
+            onChange={handleBrand}
+          />
+
+          <br />
+
+          <DropDownList
+            items={models}
+            title="Модель"
+            name="model"
+            value={inputValues.model}
+            onChange={handleModel}
+          />
+
+          <span>
+            <TextField
+              className="personal-data-text-field"
+              label="Год"
+              id="outlined-size-small"
+              name="year"
+              defaultValue={inputValues.year}
+              onChange={handleChange}
+              size="small"
+              sx={{ width: 300 }}
+            />
+          </span>
+          <br />
+          <span>
+            <TextField
+              className="personal-data-text-field"
+              label="Мощность"
+              id="outlined-size-small"
+              name="power"
+              defaultValue={inputValues.power}
+              onChange={handleChange}
+              size="small"
+              sx={{ width: 300, marginBottom: 2 }}
+            />
+          </span>
+
+          <span>
+            <DropDownList
+              items={colors}
+              title="Цвет"
+              name="color"
+              value={inputValues.color}
+              onChange={handleColor}
+            />
+          </span>
+          <br />
+          <span>
+            <DropDownList
+              items={bodyTypes}
+              title="Тип кузова"
+              name="bodyTypeId"
+              value={inputValues.bodyTypeId}
+              onChange={handleBodyType}
+            />
+          </span>
+          <br />
+          <span>
+            <DropDownList
+              items={rudders}
+              title="Руль"
+              name="rudderId"
+              value={inputValues.rudderId}
+              onChange={handleRudder}
+            />
+          </span>
         </div>
-        <div class="crud-details-content">
-          <div class="crud-details-content-left">
-            <label>Гос. номер</label>
-            <br />
-            <label>VIN</label>
-            <br />
-            <label>Марка</label>
-            <br />
-            <label>Модель</label>
-            <br />
-            <label>Год выпуска</label>
-            <br />
-            <label>Мощность</label>
-            <br />
-            <label>Цвет</label>
-            <br />
-            <label>Тип кузова</label>
-            <br />
-            <label>Руль</label>
-          </div>
-          <div class="crud-details-content-right">
-            <span>
-              <input value={cars.middleName}></input>
-            </span>
-            <br />
-            <span>{cars.vinNumber}</span>
-            <br />
-            <span>{cars.brand}</span>
-            <br />
-            <span>{cars.model}</span>
-            <br />
-            <span>{cars.releaseDate}</span>
-            <br />
-            <span>{cars.power}</span>
-            <br />
-            <span>{cars.color}</span>
-            <br />
-            <span>{cars.bodytype}</span>
-            <br />
-            <span>{cars.steeringWheel}</span>
-          </div>
-        </div>
-        <Link to="/carcrud">
-          <Button>Назад</Button>
-        </Link>
       </div>
+
+      <Button
+        sx={{ marginTop: 1, width: 300 }}
+        className="profile-appointment"
+        type={'submit'}
+        variant="outlined"
+        href=""
+        size="small"
+        onClick={submit}
+      >
+        Обновить автомобиль
+      </Button>
+      <br />
+      <Link to="/CarCrud">
+        <Button
+          sx={{ marginTop: 1, width: 300 }}
+          className="profile-appointment"
+          variant="outlined"
+          color="error"
+          size="small"
+        >
+          Отмена
+        </Button>
+      </Link>
+      {/* <Alert variant="outlined" severity="error">
+        This is an error alert — check it out!
+      </Alert> */}
     </div>
   );
 }

@@ -10,15 +10,19 @@ import {
 import React, { useContext, useState } from 'react';
 import UserContext from '../Context';
 import Avatar from '@mui/material/Avatar';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import logo from '../Assets/logo.png';
 
 export default function Header() {
+  const navigate = useNavigate();
+
   const { roleId, setRoleId } = useContext(UserContext);
 
   const hundleOutlog = () => {
+    console.log('test');
     localStorage.removeItem('token');
-    window.location = '/login';
+    setRoleId('');
+    navigate('/login');
   };
 
   return (
@@ -95,9 +99,12 @@ export default function Header() {
               </li>
             ) : (
               <li>
-                <Link to="#" className="btn" onClick={hundleOutlog}>
+                <div className="btn" onClick={hundleOutlog}>
                   Выйти
-                </Link>
+                </div>
+                {/* <Link to="/login" className="btn" onClick={hundleOutlog}>
+                  Выйти
+                </Link> */}
               </li>
             )}
           </ul>

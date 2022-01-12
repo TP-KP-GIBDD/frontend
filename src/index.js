@@ -36,7 +36,6 @@ export default function Main() {
         )
         .then((resp) => {
           setRoleId(resp.data.role);
-          console.log(resp.data);
           setInputValue({
             ...inputValue,
             userId: resp.data.id,
@@ -47,7 +46,6 @@ export default function Main() {
             phone: resp.data.phone,
             email: resp.data.email,
           });
-          console.log(resp.data);
         });
     }
   }, []);

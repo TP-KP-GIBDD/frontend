@@ -102,7 +102,7 @@ ul {
 
 .content {
   width: 1160px;
-  height: 1075px;
+  /* height: 1075px; */
   margin: 0 auto;
   background-color: #f5f5f5;
 }

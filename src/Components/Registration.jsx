@@ -10,6 +10,7 @@ import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import axios from 'axios';
 import { AUTH_API_URL } from '../Api/Api';
+import { useNavigate } from 'react-router-dom';
 
 const validationsSchema = yup.object().shape({
   firstName: yup
@@ -50,6 +51,8 @@ const validationsSchema = yup.object().shape({
 });
 
 export default function Registration() {
+  const navigate = useNavigate();
+
   const register = (values) => {
     console.log(values);
     axios
@@ -69,8 +72,7 @@ export default function Registration() {
       .then((resp) => {
         console.log(resp);
         if (resp.status === 200) {
-          window.location = '/login';
-          console.log('success');
+          navigate('/login');
         } else {
           alert('Error');
         }

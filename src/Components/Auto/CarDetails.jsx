@@ -1,39 +1,68 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Button } from '@mui/material';
+import axios from 'axios';
+import { AUTO_API_URL, AUTH_API_URL } from '../../Api/Api';
+import Loader from '../Loader';
 
 export default function CarDetails() {
-  const [cars, setCars] = useState(
-    {
-      id: 1,
-      stateNumber: 'А423РХ33',
-      vinNumber: 'XTA210990Y2766389',
-      brand: 'Toyota',
-      model: 'Mark II',
-      releaseDate: '1990',
-      power: '204',
-      color: 'Черный',
-      bodytype: 'Седан',
-      steeringWheel: 'Правый',
-    },
-    {
-      id: 2,
-      stateNumber: 'А999АА33',
-      vinNumber: 'XTA210990Y2765478',
-      brand: 'Nissan',
-      model: 'Silvia',
-      releaseDate: '1987',
-      power: '247',
-      color: 'Синий',
-      bodytype: 'Седан',
-      steeringWheel: 'Правый',
-    }
-  );
+  const [car, setCar] = useState({});
 
   const pageParams = useParams();
 
+  const fetchData = () => {
+    axios
+      .get(AUTO_API_URL + `GetAvto?id=${pageParams.id}`)
+      .then((resp) => {
+        setCar(resp.data);
+      })
+      .catch((e) => alert(e));
+  };
+
+  const [countCarOwners, setCountCarOwners] = useState();
+
+  const [carOwnerArr, setCarOwnerArr] = useState([]);
+
+  const fetchAllCarOwners = () => {
+    let test = axios
+      .get(AUTO_API_URL + `GetCarOwnerByAvtoId?id=${pageParams.id}`)
+      .then((resp) => {
+        // setCarOwners(resp.data);
+        return resp.data;
+      })
+      .catch((e) => alert(e));
+
+    test.then((data) => setCountCarOwners(data.length));
+    test.then((data) => setCarOwnerArr(data));
+  };
+
+  const [carOwnersInfo, setCarOwnersInfo] = useState(null);
+
+  const fetchCarOwnersInfo = (carOwnersArr) => {
+    let arr = [];
+
+    carOwnersArr.forEach((item) => {
+      let test = axios
+        .get(AUTH_API_URL + `Accounts/${item.personId}`, {
+          headers: {
+            Authorization: localStorage.getItem('token'),
+          },
+        })
+        .then((resp) => {
+          return resp.data;
+        });
+      test.then((data) => arr.push(data));
+    });
+
+    setTimeout(() => {
+      setCarOwnersInfo(arr);
+      console.log(arr);
+    }, 300);
+  };
+
   useEffect(() => {
-    console.log(pageParams);
+    fetchData();
+    fetchAllCarOwners();
   }, []);
 
   return (
@@ -45,46 +74,70 @@ export default function CarDetails() {
             Информация о данном автомобиле:
           </div>
         </div>
-        <div class="crud-details-content">
-          <div class="crud-details-content-left">
-            <label>Гос. номер</label>
-            <br />
-            <label>VIN</label>
-            <br />
-            <label>Марка</label>
-            <br />
-            <label>Модель</label>
-            <br />
-            <label>Год выпуска</label>
-            <br />
-            <label>Мощность</label>
-            <br />
-            <label>Цвет</label>
-            <br />
-            <label>Тип кузова</label>
-            <br />
-            <label>Руль</label>
+
+        {!(Object.keys(car).length === 0 && car.constructor === Object) ? (
+          <div class="crud-details-content">
+            <div class="crud-details-content-left">
+              <label>Гос. номер</label>
+              <br />
+              <label>VIN</label>
+              <br />
+              <label>Марка</label>
+              <br />
+              <label>Модель</label>
+              <br />
+              <label>Год выпуска</label>
+              <br />
+              <label>Мощность</label>
+              <br />
+              <label>Цвет</label>
+              <br />
+              <label>Тип кузова</label>
+              <br />
+              <label>Руль</label>
+            </div>
+            <div class="crud-details-content-right">
+              <span>{car.numberAvto}</span>
+              <br />
+              <span>{car.vin}</span>
+              <br />
+              <span>{car.brandModel.brand.name}</span>
+              <br />
+              <span>{car.brandModel.name}</span>
+              <br />
+              <span>{car.year}</span>
+              <br />
+              <span>{car.power}</span>
+              <br />
+              <span>{car.color.name}</span>
+              <br />
+              <span>{car.bodyType.name}</span>
+              <br />
+              <span>{car.rudder.name}</span>
+            </div>
+
+            <div>
+              <div>Количество владельцев: {countCarOwners}</div>
+              <Button onClick={() => fetchCarOwnersInfo(carOwnerArr)}>
+                Показать всех
+              </Button>
+
+              {carOwnersInfo !== null &&
+                carOwnersInfo.map((item) => (
+                  <>
+                    <div>Фамилия: {item.lastName}</div>
+                    <div>Имя: {item.firstName}</div>
+                    <div>Отчество: {item.middleName}</div>
+                    <div>Дата рождения: {item.birthday}</div>
+                    <br />
+                  </>
+                ))}
+            </div>
           </div>
-          <div class="crud-details-content-right">
-            <span>{cars.stateNumber}</span>
-            <br />
-            <span>{cars.vinNumber}</span>
-            <br />
-            <span>{cars.brand}</span>
-            <br />
-            <span>{cars.model}</span>
-            <br />
-            <span>{cars.releaseDate}</span>
-            <br />
-            <span>{cars.power}</span>
-            <br />
-            <span>{cars.color}</span>
-            <br />
-            <span>{cars.bodytype}</span>
-            <br />
-            <span>{cars.steeringWheel}</span>
-          </div>
-        </div>
+        ) : (
+          <Loader />
+        )}
+
         <Link to="/carcrud">
           <Button>Назад</Button>
         </Link>

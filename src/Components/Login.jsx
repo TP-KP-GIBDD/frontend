@@ -8,9 +8,11 @@ import { AUTH_API_URL } from '../Api/Api';
 import UserContext from '../Context';
 import axios from 'axios';
 import jwt from 'jwt-decode';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Logiin() {
+  const navigate = useNavigate();
+
   const validationsSchema = yup.object().shape({
     password: yup
       .string()
@@ -36,10 +38,7 @@ export default function Logiin() {
       .then((resp) => {
         console.log(resp);
         if (resp.status === 200) {
-          window.location = '/profile';
-          console.log('success');
           const user = jwt(resp.data.jwtToken);
-          console.log(user);
           localStorage.setItem('token', resp.data.jwtToken);
 
           setRoleId(resp.data.role);
@@ -50,6 +49,7 @@ export default function Logiin() {
             email: resp.data.email,
             secondName: resp.data.lastName,
           });
+          navigate('/profile');
         } else {
           alert('Error');
         }

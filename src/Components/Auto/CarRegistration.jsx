@@ -1,28 +1,139 @@
-import React from 'react';
-import { useState } from 'react';
-import { Button, TextField } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Button, TextField, Alert } from '@mui/material';
 import { Link } from 'react-router-dom';
 import DropDownList from '../AppointServiceForm/DropDownList';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { AUTO_API_URL } from '../../Api/Api';
 
 export default function CarRegistration() {
+  const navigate = useNavigate();
+
   const [inputValues, setInputValues] = useState({
-    number_avto: null,
+    stateNumber: null,
     vin: null,
     brand: null,
     model: null,
     year: null,
     power: null,
     color: null,
-    body_type_id: null,
-    rudder_id: null,
+    bodyTypeId: null,
+    rudderId: null,
   });
 
-  const [brands, setBrand] = useState(['']);
-  const [models, setModel] = useState(['']);
+  useEffect(() => {
+    fetchBrands();
+    fetchColor();
+    fetchBodyTypes();
+    fetchRudders();
+  }, []);
 
-  const [colors, serColor] = useState(['']);
-  const [body_type_ids, setBody_type_id] = useState(['']);
-  const [rudder_ids, setRudder_id] = useState(['']);
+  useEffect(() => {
+    fetchModels(inputValues.brand);
+  }, [inputValues.brand]);
+
+  const [brands, setBrands] = useState(['']);
+  const [models, setModels] = useState(['']);
+
+  const [colors, setColors] = useState(['']);
+  const [bodyTypes, setBodyTypes] = useState(['']);
+  const [rudders, setRudders] = useState(['']);
+
+  const fetchBrands = () => {
+    axios
+      .get(AUTO_API_URL + `api/Brand/GetBrands`)
+      .then((resp) => setBrands(resp.data));
+  };
+
+  const fetchModels = (brandId) => {
+    // Метод ModelsByBrandId
+    axios
+      .get(AUTO_API_URL + `api/BrandModel/GetBrandModelByBrandId?id=${brandId}`)
+      .then((resp) => {
+        console.log(resp);
+        setModels(resp.data);
+      });
+  };
+
+  const fetchColor = () => {
+    axios
+      .get(AUTO_API_URL + `api/ColorAvto/GetColorAvtoes`)
+      .then((resp) => setColors(resp.data));
+  };
+
+  const fetchBodyTypes = () => {
+    axios
+      .get(AUTO_API_URL + `GetBodyTypes`)
+      .then((resp) => setBodyTypes(resp.data));
+  };
+
+  const fetchRudders = () => {
+    axios
+      .get(AUTO_API_URL + `GetRudders`)
+      .then((resp) => setRudders(resp.data));
+  };
+
+  const submit = () => {
+    axios
+      .post(
+        AUTO_API_URL +
+          `CreateAvto?NumberAvto=${inputValues.stateNumber}
+          &Vin=${inputValues.vin}
+          &BrandModelId=${inputValues.model}
+          &Year=${inputValues.year}
+          &Power=${inputValues.power}
+          &ColorId=${inputValues.color}
+          &BodyTypeId=${inputValues.bodyTypeId}
+          &RudderId=${inputValues.rudderId}`
+      )
+      .then((resp) => {
+        if (resp.status === 200) {
+          navigate('/CarCrud');
+        } else {
+          alert('Error');
+        }
+      });
+  };
+
+  const handleBrand = (e) => {
+    setInputValues({ ...inputValues, brand: e.target.value });
+  };
+
+  const handleModel = (e) => {
+    setInputValues({ ...inputValues, model: e.target.value });
+  };
+
+  const handleColor = (e) => {
+    setInputValues({ ...inputValues, color: e.target.value });
+  };
+
+  const handleBodyType = (e) => {
+    setInputValues({ ...inputValues, bodyTypeId: e.target.value });
+  };
+
+  const handleRudder = (e) => {
+    setInputValues({ ...inputValues, rudderId: e.target.value });
+  };
+
+  const handleChange = (e) => {
+    console.log(e);
+    switch (e.target.name) {
+      case 'stateNumber':
+        setInputValues({ ...inputValues, stateNumber: e.target.value });
+        break;
+      case 'vin':
+        setInputValues({ ...inputValues, vin: e.target.value });
+        break;
+
+      case 'year':
+        setInputValues({ ...inputValues, year: e.target.value });
+        break;
+      case 'power':
+        setInputValues({ ...inputValues, power: e.target.value });
+        break;
+    }
+    console.log(inputValues);
+  };
 
   return (
     <div>
@@ -38,9 +149,11 @@ export default function CarRegistration() {
               className="personal-data-text-field"
               label="Гос. Знак"
               id="outlined-size-small"
-              defaultValue={inputValues.number_avto}
+              name="stateNumber"
+              defaultValue={inputValues.stateNumber}
               size="small"
               sx={{ width: 300, height: 40 }}
+              onChange={handleChange}
             />
           </span>
           <br />
@@ -49,9 +162,11 @@ export default function CarRegistration() {
               className="personal-data-text-field"
               label="VIN Номер"
               id="outlined-size-small"
+              name="vin"
               defaultValue={inputValues.vin}
               size="small"
               sx={{ width: 300, marginBottom: 2 }}
+              onChange={handleChange}
             />
           </span>
           <br />
@@ -59,9 +174,10 @@ export default function CarRegistration() {
           <DropDownList
             items={brands}
             title="Марка"
+            name="brand"
             value={inputValues.brand}
             size="small"
-            // onChange={handleChangeService}
+            onChange={handleBrand}
           />
 
           <br />
@@ -69,8 +185,9 @@ export default function CarRegistration() {
           <DropDownList
             items={models}
             title="Модель"
+            name="model"
             value={inputValues.model}
-            // onChange={handleChangeService}
+            onChange={handleModel}
           />
 
           <span>
@@ -78,7 +195,9 @@ export default function CarRegistration() {
               className="personal-data-text-field"
               label="Год"
               id="outlined-size-small"
+              name="year"
               defaultValue={inputValues.year}
+              onChange={handleChange}
               size="small"
               sx={{ width: 300 }}
             />
@@ -89,7 +208,9 @@ export default function CarRegistration() {
               className="personal-data-text-field"
               label="Мощность"
               id="outlined-size-small"
+              name="power"
               defaultValue={inputValues.power}
+              onChange={handleChange}
               size="small"
               sx={{ width: 300, marginBottom: 2 }}
             />
@@ -99,26 +220,29 @@ export default function CarRegistration() {
             <DropDownList
               items={colors}
               title="Цвет"
+              name="color"
               value={inputValues.color}
-              // onChange={handleChangeService}
+              onChange={handleColor}
             />
           </span>
           <br />
           <span>
             <DropDownList
-              items={body_type_ids}
+              items={bodyTypes}
               title="Тип кузова"
-              value={inputValues.body_type_id}
-              // onChange={handleChangeService}
+              name="bodyTypeId"
+              value={inputValues.bodyTypeId}
+              onChange={handleBodyType}
             />
           </span>
           <br />
           <span>
             <DropDownList
-              items={rudder_ids}
+              items={rudders}
               title="Руль"
-              value={inputValues.rudder_id}
-              // onChange={handleChangeService}
+              name="rudderId"
+              value={inputValues.rudderId}
+              onChange={handleRudder}
             />
           </span>
         </div>
@@ -131,6 +255,7 @@ export default function CarRegistration() {
         variant="outlined"
         href=""
         size="small"
+        onClick={submit}
       >
         Зарегестрировать автомобиль
       </Button>
@@ -146,6 +271,9 @@ export default function CarRegistration() {
           Отмена
         </Button>
       </Link>
+      {/* <Alert variant="outlined" severity="error">
+        This is an error alert — check it out!
+      </Alert> */}
     </div>
   );
 }

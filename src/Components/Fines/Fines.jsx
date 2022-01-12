@@ -8,7 +8,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-import { Link } from 'react-router-dom';
 
 export default function Fines() {
   // const { inputValue } = useContext(UserContext);
