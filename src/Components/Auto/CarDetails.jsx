@@ -51,12 +51,20 @@ export default function CarDetails() {
         .then((resp) => {
           return resp.data;
         });
-      test.then((data) => arr.push(data));
+      test.then((data) => {
+        let car = {
+          lastName: data.lastName,
+          firstName: data.firstName,
+          middleName: data.middleName,
+          birthday: data.birthday,
+          registrationDate: new Date(item.registrationDate).getTime(),
+        };
+        arr.push(car);
+      });
     });
 
     setTimeout(() => {
       setCarOwnersInfo(arr);
-      console.log(arr);
     }, 300);
   };
 
@@ -129,6 +137,10 @@ export default function CarDetails() {
                     <div>Имя: {item.firstName}</div>
                     <div>Отчество: {item.middleName}</div>
                     <div>Дата рождения: {item.birthday}</div>
+                    <div>
+                      Дата регистрации авто:{' '}
+                      {new Date(item.registrationDate).toLocaleDateString()}
+                    </div>
                     <br />
                   </>
                 ))}

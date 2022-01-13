@@ -8,32 +8,27 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
+import axios from 'axios';
+import { FINE_API_URL } from '../../Api/Api';
 
 export default function Fines() {
   // const { inputValue } = useContext(UserContext);
 
-  const [fines, setFines] = useState([
-    {
-      id: 1,
-      owner: 1,
-      summ: '1000',
-      type: 'Превышение скорости',
-      status: 'Не оплачен',
-    },
-    {
-      id: 2,
-      owner: 2,
-      summ: '2500',
-      type: 'Остановка в неположеном месте',
-      status: 'Не оплачен',
-    },
-  ]);
+  const [fines, setFines] = useState([]);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-  const fetchData = (userId) => {
-    // Запрос к севреру по userid
-    return 0;
+  const fetchData = () => {
+    axios
+      .get(FINE_API_URL + `GetFines`)
+      .then((resp) => {
+        setFines(resp.data);
+      })
+      .catch((e) => alert(e));
+
+    console.log(fines);
   };
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -55,6 +50,7 @@ export default function Fines() {
       border: 0,
     },
   }));
+
   return (
     <div>
       <h1 className="profile-heading">Все штрафы</h1>
@@ -101,16 +97,24 @@ export default function Fines() {
           </TableHead>
           <TableBody>
             {fines.map((item) => (
-              <StyledTableRow key={item.name}>
+              <StyledTableRow key={item.id}>
                 <StyledTableCell component="th" scope="row" align="center">
                   {item.id}
                 </StyledTableCell>
-                <StyledTableCell align="center">{item.owner}</StyledTableCell>
-                <StyledTableCell align="center">{item.summ}</StyledTableCell>
-                <StyledTableCell align="center">{item.type}</StyledTableCell>
-                <StyledTableCell align="center">{item.status}</StyledTableCell>
                 <StyledTableCell align="center">
-                  <Button>Оплачен</Button>
+                  {item.personId}
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  {item.sumaryFine}
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  {item.typeFine?.name}
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  {item.statusFine}
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  <Button>Подробнее</Button>
                 </StyledTableCell>
               </StyledTableRow>
             ))}
