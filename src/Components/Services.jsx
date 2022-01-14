@@ -12,14 +12,18 @@ export default function Services() {
         <h1 className="online-service">Онлайн-сервисы</h1>
       </div>
       <div className="service-container">
-        <div className="service-item">
-          <img src={Law} />
-          <p className="service-item-text">Проверка штрафов</p>
-        </div>
-        <div className="service-item">
-          <img src={Car} />
-          <p className="service-item-text">Проверка автомобиля</p>
-        </div>
+        <Link to="/fineCheck">
+          <div className="service-item">
+            <img src={Law} />
+            <p className="service-item-text">Проверка штрафов</p>
+          </div>
+        </Link>
+        <Link to="/carCheck">
+          <div className="service-item">
+            <img src={Car} />
+            <p className="service-item-text">Проверка автомобиля</p>
+          </div>
+        </Link>
         <div className="service-item">
           <img src={dtp} />
           <p className="service-item-text">ДТП</p>

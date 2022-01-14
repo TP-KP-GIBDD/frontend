@@ -61,7 +61,11 @@ export default function EmployeeDetailsAppointService() {
 
   const fetchData = (id) => {
     axios
-      .get(APPOINT_API_URL + `Main/GetAppointById/${id}`)
+      .get(APPOINT_API_URL + `Main/GetAppointById/${id}`, {
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      })
       .then((resp) => {
         setAppoint(resp.data);
         console.log(resp.data);
@@ -98,7 +102,11 @@ export default function EmployeeDetailsAppointService() {
     console.log(appoint.id);
     console.log(appoint.status);
     axios
-      .post(APPOINT_API_URL + `Main/SetStatus/${appoint.id}?status=${status}`)
+      .post(APPOINT_API_URL + `Main/SetStatus/${appoint.id}?status=${status}`, {
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      })
       .then((response) => {
         navigate('/EmployeeAppointServiceList');
       })

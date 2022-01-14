@@ -20,6 +20,14 @@ import EmployeeDetailsAppointService from './Pages/EmployeeDetailsAppointService
 import { useEffect, useContext } from 'react';
 import UserContext from './Context';
 import Fines from './Components/Fines/Fines';
+import FineDetails from './Components/Fines/FineDetails';
+import FineRegistration from './Components/Fines/FineRegistration';
+import CarCheck from './Components/Auto/CarCheck';
+import FineCheck from './Components/Fines/FineCheck';
+import Dtp from './Components/DTP/Dtp';
+import DtpDetails from './Components/DTP/DtpDetails';
+import CreateDtp from './Components/DTP/СreateDtp';
+// import MyCar from './Components/Auto/MyCar';
 
 function App() {
   const { roleId, setRoleId } = useContext(UserContext);
@@ -34,13 +42,11 @@ function App() {
               <Route exact path="/" element={<Home />} />
               {/* <Route exact path="/contacts" component={Contacts} /> */}
               <Route path="/services" element={<Services />} />
-
               <Route path="/login" element={<Login />} />
               <Route path="/registration" element={<Registration />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/profileupdate" element={<ProfileUpdate />} />
               <Route path="/employee" element={<Employee />} />
-
               <Route
                 path="registrationAppoint"
                 element={<AppointServiceForm />}
@@ -54,18 +60,25 @@ function App() {
                 element={<EmployeeAppointServiceList />}
               />
               <Route path="AppointDetails/:id" element={<AppointDetails />} />
-
               <Route
                 path="/EmployeeDetailsAppointService/:id"
                 element={<EmployeeDetailsAppointService />}
               />
-
               <Route path="/carregistration" element={<CarRegistration />} />
               <Route path="/carcrud" element={<CarCrud />} />
               <Route path="/cardetails/:id" element={<CarDetails />} />
               <Route path="/cardetails" element={<CarDetails />} />
               <Route path="/carupdate/:id" element={<CarUpdate />} />
+              <Route path="/carCheck" element={<CarCheck />} />
               <Route path="/fines" element={<Fines />} />
+              <Route path="/FineDetails/:id" element={<FineDetails />} />
+              FineRegistration
+              <Route path="/fineregistration" element={<FineRegistration />} />
+              <Route path="/fineCheck" element={<FineCheck />} />
+              {/* <Route path="/mycar" element={<MyCar />} /> */}
+              <Route path="/dtp" element={<Dtp />} />
+              <Route path="/dtpDetails/:id" element={<DtpDetails />} />
+              <Route path="/createDtp" element={<CreateDtp />} />
             </Routes>
           </div>
         </div>

@@ -25,14 +25,24 @@ export default function CarCrud() {
   };
 
   const fetchCars = () => {
-    const resp = axios.get(AUTO_API_URL + 'GetAvtos').then((response) => {
-      setCars(response.data);
-    });
+    const resp = axios
+      .get(AUTO_API_URL + 'GetAvtos', {
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      })
+      .then((response) => {
+        setCars(response.data);
+      });
   };
 
   const deleteCar = (id) => {
     const resp = axios
-      .delete(AUTO_API_URL + `DeleteAvto/?id=${id}`)
+      .delete(AUTO_API_URL + `DeleteAvto/?id=${id}`, {
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      })
       .then((response) => {});
   };
 
@@ -45,7 +55,11 @@ export default function CarCrud() {
     }
 
     const resp = axios
-      .get(AUTO_API_URL + `GetAvto?id=${searchValue}`)
+      .get(AUTO_API_URL + `GetAvto?id=${searchValue}`, {
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      })
       .then((response) => {
         let arr = [];
         arr.push(response.data);

@@ -9,30 +9,11 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import axios from 'axios';
-import { FINE_API_URL } from '../../Api/Api';
+import { DTP_API_URL } from '../../Api/Api';
 import { Link } from 'react-router-dom';
 
-export default function Fines() {
-  // const { inputValue } = useContext(UserContext);
-
-  const [fines, setFines] = useState([]);
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = () => {
-    axios
-      .get(FINE_API_URL + `GetFines`, {
-        headers: {
-          Authorization: localStorage.getItem('token'),
-        },
-      })
-      .then((resp) => {
-        setFines(resp.data);
-      })
-      .catch((e) => alert(e));
-  };
+export default function Dtp() {
+  const [dtp, setDtp] = useState([]);
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -54,50 +35,26 @@ export default function Fines() {
     },
   }));
 
-  const [searchValue, setSearchValue] = useState('');
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-  const handleSearchHange = (e) => {
-    setSearchValue(e.target.value);
-  };
-
-  const findById = () => {
-    if (searchValue === '') {
-      fetchData();
-      return;
-    }
-
-    axios
-      .get(FINE_API_URL + `GetFineByPersonId?id=${searchValue}`, {
+  const fetchData = () => {
+    const resp = axios
+      .get(DTP_API_URL + 'GetProtocols', {
         headers: {
           Authorization: localStorage.getItem('token'),
         },
       })
-      .then((resp) => {
-        // resp.data.filter((item) => item.statusFine !== 'Не оплачен');
-
-        let result = resp.data.filter(
-          (item) => item.statusFine === 'Не оплачен'
-        );
-        setFines(result);
-      })
-      .catch((e) => alert(e));
+      .then((response) => {
+        console.log(response.data);
+        setDtp(response.data);
+      });
   };
 
   return (
     <div>
-      <h1 className="profile-heading">Все штрафы</h1>
-
-      <input
-        style={{ marginBottom: 30 }}
-        class="crud-input"
-        type="search"
-        placeholder="id автовладельца"
-        value={searchValue}
-        onChange={handleSearchHange}
-      />
-      <button class="crud-search" onClick={() => findById()}>
-        Search
-      </button>
+      <h1 className="profile-heading">Все ДТП</h1>
 
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -113,26 +70,27 @@ export default function Fines() {
                 class="appoint-service-table-head-fines"
                 align="left"
               >
-                Владелец
+                Адрес
               </StyledTableCell>
               <StyledTableCell
                 class="appoint-service-table-head-fines"
                 align="right"
               >
-                Сумма
+                Дата
               </StyledTableCell>
               <StyledTableCell
                 class="appoint-service-table-head-fines"
                 align="right"
               >
-                Тип штрафа
+                Инспектор
               </StyledTableCell>
               <StyledTableCell
                 class="appoint-service-table-head-fines"
                 align="right"
               >
-                Статус
+                Участник
               </StyledTableCell>
+
               <StyledTableCell
                 class="appoint-service-table-head-fines"
                 align="right"
@@ -140,27 +98,22 @@ export default function Fines() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {fines.map((item) => (
+            {dtp.map((item) => (
               <StyledTableRow key={item.id}>
-                <StyledTableCell component="th" scope="row" align="center">
-                  {item.id}
+                <StyledTableCell align="center">{item.id}</StyledTableCell>
+                <StyledTableCell align="center">{item.address}</StyledTableCell>
+                <StyledTableCell align="center">
+                  {new Date(item.dateTime).toLocaleDateString()}
                 </StyledTableCell>
                 <StyledTableCell align="center">
-                  {item.personId}
+                  {item.inspectorId}
                 </StyledTableCell>
                 <StyledTableCell align="center">
-                  {item.sumaryFine}
+                  {item.participants.accountId}
                 </StyledTableCell>
-                <StyledTableCell align="center">
-                  {item.typeFine?.name}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  {item.statusFine}
-                </StyledTableCell>
-
                 <StyledTableCell align="center">
                   <Link
-                    to={`/FineDetails/${item.id}?avtoId=${item.avtoId}&personId=${item.personId}`}
+                    to={`/DtpDetails/${item.id}?avtoId=${item.avtoId}&personId=${item.participants.accountId}&inspectorId=${item.inspectorId}`}
                   >
                     <Button>Подробнее</Button>
                   </Link>

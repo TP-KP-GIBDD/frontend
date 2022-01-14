@@ -27,7 +27,11 @@ export default function EmployeeAppointServiceList() {
 
     if (userId !== null) {
       const resp = axios
-        .get(APPOINT_API_URL + `Main/GetAllAppoints`)
+        .get(APPOINT_API_URL + `Main/GetAllAppoints`, {
+          headers: {
+            Authorization: localStorage.getItem('token'),
+          },
+        })
         .then((response) => {
           setAppoints(response.data);
           console.log(response.data);

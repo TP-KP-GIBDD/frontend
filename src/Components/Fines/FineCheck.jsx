@@ -11,25 +11,37 @@ import Button from '@mui/material/Button';
 import axios from 'axios';
 import { FINE_API_URL } from '../../Api/Api';
 import { Link } from 'react-router-dom';
+import jwt from 'jwt-decode';
 
-export default function Fines() {
+export default function FineCheck() {
   // const { inputValue } = useContext(UserContext);
 
   const [fines, setFines] = useState([]);
 
   useEffect(() => {
     fetchData();
+
+    fines.filter((item) => item.statusFine !== 'Не оплачен');
   }, []);
 
   const fetchData = () => {
     axios
-      .get(FINE_API_URL + `GetFines`, {
-        headers: {
-          Authorization: localStorage.getItem('token'),
-        },
-      })
+      .get(
+        FINE_API_URL +
+          `GetFineByPersonId?id=${jwt(localStorage.getItem('token')).id}`,
+        {
+          headers: {
+            Authorization: localStorage.getItem('token'),
+          },
+        }
+      )
       .then((resp) => {
-        setFines(resp.data);
+        // resp.data.filter((item) => item.statusFine !== 'Не оплачен');
+
+        let result = resp.data.filter(
+          (item) => item.statusFine === 'Не оплачен'
+        );
+        setFines(result);
       })
       .catch((e) => alert(e));
   };
@@ -54,51 +66,16 @@ export default function Fines() {
     },
   }));
 
-  const [searchValue, setSearchValue] = useState('');
-
-  const handleSearchHange = (e) => {
-    setSearchValue(e.target.value);
-  };
-
-  const findById = () => {
-    if (searchValue === '') {
-      fetchData();
-      return;
-    }
-
-    axios
-      .get(FINE_API_URL + `GetFineByPersonId?id=${searchValue}`, {
-        headers: {
-          Authorization: localStorage.getItem('token'),
-        },
-      })
-      .then((resp) => {
-        // resp.data.filter((item) => item.statusFine !== 'Не оплачен');
-
-        let result = resp.data.filter(
-          (item) => item.statusFine === 'Не оплачен'
-        );
-        setFines(result);
-      })
-      .catch((e) => alert(e));
-  };
-
   return (
     <div>
-      <h1 className="profile-heading">Все штрафы</h1>
-
-      <input
-        style={{ marginBottom: 30 }}
-        class="crud-input"
-        type="search"
-        placeholder="id автовладельца"
-        value={searchValue}
-        onChange={handleSearchHange}
-      />
-      <button class="crud-search" onClick={() => findById()}>
-        Search
-      </button>
-
+      {/* {fines.length !== undefined ? (
+        <h1 className="profile-heading">У вас имеются неоплаченные штрафы:</h1>
+      ) : (
+        <h1 className="profile-heading">
+          У вас нету неоплаченных штрафов штрафы:
+        </h1>
+      )} */}
+      <h1 className="profile-heading">Ваши неоплаченные штрафы:</h1>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
@@ -109,12 +86,7 @@ export default function Fines() {
               >
                 №
               </StyledTableCell>
-              <StyledTableCell
-                class="appoint-service-table-head-fines"
-                align="left"
-              >
-                Владелец
-              </StyledTableCell>
+
               <StyledTableCell
                 class="appoint-service-table-head-fines"
                 align="right"
@@ -145,9 +117,7 @@ export default function Fines() {
                 <StyledTableCell component="th" scope="row" align="center">
                   {item.id}
                 </StyledTableCell>
-                <StyledTableCell align="center">
-                  {item.personId}
-                </StyledTableCell>
+
                 <StyledTableCell align="center">
                   {item.sumaryFine}
                 </StyledTableCell>

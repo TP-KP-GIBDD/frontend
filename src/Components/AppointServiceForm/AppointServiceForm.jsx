@@ -13,10 +13,10 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { Placemark, YMaps } from 'react-yandex-maps';
 import jwt from 'jwt-decode';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function AppointServiceForm(props) {
-  const navigate = useNavigate;
+  const navigate = useNavigate();
 
   const [inputValues, setInputValues] = useState({
     region: null,
@@ -58,20 +58,36 @@ export default function AppointServiceForm(props) {
   }, []);
 
   const fetchRegions = () => {
-    const resp = axios.get(APPOINT_API_URL + 'region').then((response) => {
-      setRegions(response.data);
-    });
+    const resp = axios
+      .get(APPOINT_API_URL + 'region', {
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      })
+      .then((response) => {
+        setRegions(response.data);
+      });
   };
 
   const fetchServices = () => {
-    axios.get(APPOINT_API_URL + 'service').then((resp) => {
-      setServices(resp.data);
-    });
+    axios
+      .get(APPOINT_API_URL + 'service', {
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      })
+      .then((resp) => {
+        setServices(resp.data);
+      });
   };
 
   const fetchOfficesByRegionId = (id) => {
     axios
-      .get(APPOINT_API_URL + `GibddOffice/GetOfficesByRegionId/${id}`)
+      .get(APPOINT_API_URL + `GibddOffice/GetOfficesByRegionId/${id}`, {
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      })
       .then((response) => {
         setOffices(response.data);
       });
@@ -79,7 +95,11 @@ export default function AppointServiceForm(props) {
 
   const fetchTimesByDate = (date) => {
     axios
-      .get(APPOINT_API_URL + `DateTime/GetTimesByDate/${date}`)
+      .get(APPOINT_API_URL + `DateTime/GetTimesByDate/${date}`, {
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      })
       .then((responce) => {
         setTimes(responce.data);
       })
@@ -107,23 +127,31 @@ export default function AppointServiceForm(props) {
   };
 
   const hundleSubmit = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
 
     const userId = Number(jwt(localStorage.getItem('token')).id);
     console.log(userId);
     if (userId !== null) {
       axios
-        .post(APPOINT_API_URL + `Main`, {
-          CarOwnerId: userId,
-          RegionId: 1,
-          GibddOfficeId: inputValues.gibddOffice,
-          ServiceId: inputValues.service,
-          DateTimeId: inputValues.dateTime,
-        })
+        .post(
+          APPOINT_API_URL + `Main`,
+          {
+            CarOwnerId: userId,
+            RegionId: 1,
+            GibddOfficeId: inputValues.gibddOffice,
+            ServiceId: inputValues.service,
+            DateTimeId: inputValues.dateTime,
+          },
+          {
+            headers: {
+              Authorization: localStorage.getItem('token'),
+            },
+          }
+        )
         .then((response) => {
           navigate('/AppointServiceList');
         })
-        .catch((e) => alert(e));
+        .catch((e) => console.log(e));
     } else {
       alert('ERROR');
     }
@@ -145,7 +173,7 @@ export default function AppointServiceForm(props) {
   };
 
   return (
-    <form onSubmit={hundleSubmit}>
+    <form>
       <TrueStep
         activeStep={activeStep}
         handleNext={handleNext}
@@ -305,9 +333,9 @@ export default function AppointServiceForm(props) {
               <div className="Stepper-btn-wrapper">
                 <Button
                   variant="contained"
-                  onClick={handleNext}
+                  // onClick={handleNext}
+                  onClick={hundleSubmit}
                   sx={{ mt: 1, mr: 1 }}
-                  type="submit"
                 >
                   Отправить
                 </Button>

@@ -33,7 +33,11 @@ export default function AppointDetails() {
 
   const fetchData = (id) => {
     axios
-      .get(APPOINT_API_URL + `Main/GetAppointById/${id}`)
+      .get(APPOINT_API_URL + `Main/GetAppointById/${id}`, {
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      })
       .then((resp) => {
         setAppoint(resp.data);
         console.log(resp.data);

@@ -2,7 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Button } from '@mui/material';
 import axios from 'axios';
-import { AUTO_API_URL, AUTH_API_URL } from '../../Api/Api';
+import {
+  AUTO_API_URL,
+  AUTH_API_URL,
+  FINE_API_URL,
+  DTP_API_URL,
+} from '../../Api/Api';
 import Loader from '../Loader';
 
 export default function CarDetails() {
@@ -12,7 +17,11 @@ export default function CarDetails() {
 
   const fetchData = () => {
     axios
-      .get(AUTO_API_URL + `GetAvto?id=${pageParams.id}`)
+      .get(AUTO_API_URL + `GetAvto?id=${pageParams.id}`, {
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      })
       .then((resp) => {
         setCar(resp.data);
       })
@@ -25,7 +34,11 @@ export default function CarDetails() {
 
   const fetchAllCarOwners = () => {
     let test = axios
-      .get(AUTO_API_URL + `GetCarOwnerByAvtoId?id=${pageParams.id}`)
+      .get(AUTO_API_URL + `GetCarOwnerByAvtoId?id=${pageParams.id}`, {
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      })
       .then((resp) => {
         // setCarOwners(resp.data);
         return resp.data;
@@ -57,10 +70,12 @@ export default function CarDetails() {
           firstName: data.firstName,
           middleName: data.middleName,
           birthday: data.birthday,
-          registrationDate: new Date(item.registrationDate).getTime(),
+          registrationDate: item.registrationDate,
         };
         arr.push(car);
       });
+
+      console.log(carOwnersInfo);
     });
 
     setTimeout(() => {
@@ -73,6 +88,50 @@ export default function CarDetails() {
     fetchAllCarOwners();
   }, []);
 
+  const [countFines, setCountFines] = useState(null);
+  const [carFines, setCarFines] = useState([]);
+  const [totalSumary, setTotalSumary] = useState(0);
+  const [isShow, setIsShow] = useState(false);
+
+  const fetchFines = (carId) => {
+    axios
+      .get(FINE_API_URL + `GetFineByAvtoId?id=${carId}`, {
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      })
+      .then((resp) => {
+        let result = resp.data;
+
+        let total = 0;
+        result.forEach((item) => (total += item.sumaryFine));
+        setTotalSumary(total);
+
+        setIsShow(true);
+        setCarFines(resp.data);
+        setCountFines(resp.data.length);
+      })
+      .catch((e) => alert(e));
+  };
+
+  const [dtpList, setDtpList] = useState([]);
+  const [countDtp, setCountDtp] = useState([]);
+  const [isDtpShow, setIsDtpShow] = useState(false);
+
+  const fetchDtp = (carId) => {
+    axios
+      .get(DTP_API_URL + `GetProtocolByAvto?AvtoId=${carId}`, {
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      })
+      .then((resp) => {
+        setDtpList(resp.data);
+        setIsDtpShow(true);
+        setCountDtp(resp.data.lenght);
+      });
+  };
+
   return (
     <div>
       <div class="crud-details-table">
@@ -82,7 +141,6 @@ export default function CarDetails() {
             Информация о данном автомобиле:
           </div>
         </div>
-
         {!(Object.keys(car).length === 0 && car.constructor === Object) ? (
           <div class="crud-details-content">
             <div class="crud-details-content-left">
@@ -103,6 +161,8 @@ export default function CarDetails() {
               <label>Тип кузова</label>
               <br />
               <label>Руль</label>
+              <br />
+              <label>Количество владельцев: </label>
             </div>
             <div class="crud-details-content-right">
               <span>{car.numberAvto}</span>
@@ -122,34 +182,79 @@ export default function CarDetails() {
               <span>{car.bodyType.name}</span>
               <br />
               <span>{car.rudder.name}</span>
+              <br />
+              <span>
+                {countCarOwners}
+                <Button onClick={() => fetchCarOwnersInfo(carOwnerArr)}>
+                  Показать всех
+                </Button>
+              </span>
             </div>
-
-            <div>
-              <div>Количество владельцев: {countCarOwners}</div>
-              <Button onClick={() => fetchCarOwnersInfo(carOwnerArr)}>
-                Показать всех
-              </Button>
-
-              {carOwnersInfo !== null &&
-                carOwnersInfo.map((item) => (
-                  <>
-                    <div>Фамилия: {item.lastName}</div>
-                    <div>Имя: {item.firstName}</div>
-                    <div>Отчество: {item.middleName}</div>
-                    <div>Дата рождения: {item.birthday}</div>
-                    <div>
-                      Дата регистрации авто:{' '}
-                      {new Date(item.registrationDate).toLocaleDateString()}
-                    </div>
-                    <br />
-                  </>
-                ))}
-            </div>
+            <br />
+            <div></div>
           </div>
         ) : (
           <Loader />
         )}
+        {carOwnersInfo !== null &&
+          carOwnersInfo.map((item) => (
+            <>
+              <div>Фамилия: {item.lastName}</div>
+              <div>Имя: {item.firstName}</div>
+              <div>Отчество: {item.middleName}</div>
+              <div>Дата рождения: {item.birthday}</div>
+              <div>
+                Дата регистрации авто:{' '}
+                {new Date(item.registrationDate).toLocaleDateString()}
+              </div>
+              <br />
+            </>
+          ))}
 
+        <Button onClick={() => fetchFines(car.id)}>Проверить на штрафы</Button>
+        {isShow === true && (
+          <div>
+            <label>Количество неоплаченных штрафов: {countFines}</label>
+            <br />
+            <label>Общая сумма неоплаченных штрафов: {totalSumary}</label>
+            <br />
+            <br />
+          </div>
+        )}
+        {countCarOwners !== null && (
+          <div>
+            {carFines.map((item) => {
+              return (
+                <>
+                  {console.log(item)}
+                  <div>Статья ПДД: {item.typeFine?.article}</div>
+                  <div>Описание: {item.typeFine?.name}</div>
+                  <div>Сумма: {item.sumaryFine}</div>
+
+                  <br />
+                </>
+              );
+            })}
+          </div>
+        )}
+        <Button onClick={() => fetchDtp(car.id)}>Проверить на ДТП</Button>
+        {isDtpShow === true && (
+          <div>
+            <label>Найдено {countFines} ДТП</label>
+          </div>
+        )}
+        {dtpList !== null &&
+          dtpList?.map((item) => (
+            <>
+              <div>Дата: {new Date(item.dateTime).toLocaleDateString()}</div>
+              <div>Тип нарушения: {item.typeViolation?.name}</div>
+              <div>Повреждения: {item.danger}</div>
+
+              <br />
+            </>
+          ))}
+
+        <br />
         <Link to="/carcrud">
           <Button>Назад</Button>
         </Link>

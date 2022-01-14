@@ -33,12 +33,22 @@ export default function Employee() {
             Все штрафы
           </Button>
         </Link>
+        <Link to="/fineregistration">
+          <Button className="car-btn" variant="outlined" size="small">
+            Добавить штраф
+          </Button>
+        </Link>
       </div>
       <h2 class="profile-head">ДТП</h2>
       <div className="employee-head">
-        <Link to="#">
+        <Link to="/dtp">
           <Button className="car-btn" variant="outlined" size="small">
             ДТП
+          </Button>
+        </Link>
+        <Link to="/createDtp">
+          <Button className="car-btn" variant="outlined" size="small">
+            Добавить ДТП
           </Button>
         </Link>
       </div>

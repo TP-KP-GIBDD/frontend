@@ -12,7 +12,8 @@ export default function CarRegistration() {
   const pageParams = useParams();
 
   const [inputValues, setInputValues] = useState({
-    stateNumber: '44325',
+    inputValues: pageParams.id,
+    stateNumber: null,
     vin: null,
     brand: null,
     model: null,
@@ -32,6 +33,7 @@ export default function CarRegistration() {
         console.log(resp.data);
         setInputValues({
           ...inputValues,
+          id: resp.data.id,
           stateNumber: resp.data.numberAvto,
           vin: resp.data.vin,
           brand: resp.data.brandModel.brand.id,
@@ -75,7 +77,14 @@ export default function CarRegistration() {
   const fetchModels = (brandId) => {
     // Метод ModelsByBrandId
     axios
-      .get(AUTO_API_URL + `api/BrandModel/GetBrandModelByBrandId?id=${brandId}`)
+      .get(
+        AUTO_API_URL + `api/BrandModel/GetBrandModelByBrandId?id=${brandId}`,
+        {
+          headers: {
+            Authorization: localStorage.getItem('token'),
+          },
+        }
+      )
       .then((resp) => {
         console.log(resp);
         setModels(resp.data);
@@ -84,34 +93,52 @@ export default function CarRegistration() {
 
   const fetchColor = () => {
     axios
-      .get(AUTO_API_URL + `api/ColorAvto/GetColorAvtoes`)
+      .get(AUTO_API_URL + `api/ColorAvto/GetColorAvtoes`, {
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      })
       .then((resp) => setColors(resp.data));
   };
 
   const fetchBodyTypes = () => {
     axios
-      .get(AUTO_API_URL + `GetBodyTypes`)
+      .get(AUTO_API_URL + `GetBodyTypes`, {
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      })
       .then((resp) => setBodyTypes(resp.data));
   };
 
   const fetchRudders = () => {
     axios
-      .get(AUTO_API_URL + `GetRudders`)
+      .get(AUTO_API_URL + `GetRudders`, {
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      })
       .then((resp) => setRudders(resp.data));
   };
 
   const submit = () => {
     axios
-      .post(
+      .put(
         AUTO_API_URL +
-          `CreateAvto?NumberAvto=${inputValues.stateNumber}
+          `UpdateAvto?NumberAvto=${inputValues.stateNumber}
+          &Id=${inputValues.id}
           &Vin=${inputValues.vin}
           &BrandModelId=${inputValues.model}
           &Year=${inputValues.year}
           &Power=${inputValues.power}
           &ColorId=${inputValues.color}
           &BodyTypeId=${inputValues.bodyTypeId}
-          &RudderId=${inputValues.rudderId}`
+          &RudderId=${inputValues.rudderId}`,
+        {
+          headers: {
+            Authorization: localStorage.getItem('token'),
+          },
+        }
       )
       .then((resp) => {
         if (resp.status === 200) {
@@ -143,7 +170,7 @@ export default function CarRegistration() {
   };
 
   const handleChange = (e) => {
-    console.log(e);
+    console.log(inputValues);
     switch (e.target.name) {
       case 'stateNumber':
         setInputValues({ ...inputValues, stateNumber: e.target.value });

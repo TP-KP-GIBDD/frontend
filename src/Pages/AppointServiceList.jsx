@@ -27,7 +27,11 @@ export default function AppointServiceList() {
 
     if (userId !== null) {
       const resp = axios
-        .get(APPOINT_API_URL + `Main/GetAppointsByCarOwnerId/${userId}`)
+        .get(APPOINT_API_URL + `Main/GetAppointsByCarOwnerId/${userId}`, {
+          headers: {
+            Authorization: localStorage.getItem('token'),
+          },
+        })
         .then((response) => {
           setAppoints(response.data);
         });
@@ -72,7 +76,7 @@ export default function AppointServiceList() {
             </TableHead>
             <TableBody>
               {appoints.map((item) => (
-                <StyledTableRow key={item.name}>
+                <StyledTableRow key={item.id}>
                   <StyledTableCell component="th" scope="row">
                     {item.service.name}
                   </StyledTableCell>

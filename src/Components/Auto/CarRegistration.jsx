@@ -41,14 +41,25 @@ export default function CarRegistration() {
 
   const fetchBrands = () => {
     axios
-      .get(AUTO_API_URL + `api/Brand/GetBrands`)
+      .get(AUTO_API_URL + `api/Brand/GetBrands`, {
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      })
       .then((resp) => setBrands(resp.data));
   };
 
   const fetchModels = (brandId) => {
     // Метод ModelsByBrandId
     axios
-      .get(AUTO_API_URL + `api/BrandModel/GetBrandModelByBrandId?id=${brandId}`)
+      .get(
+        AUTO_API_URL + `api/BrandModel/GetBrandModelByBrandId?id=${brandId}`,
+        {
+          headers: {
+            Authorization: localStorage.getItem('token'),
+          },
+        }
+      )
       .then((resp) => {
         console.log(resp);
         setModels(resp.data);
@@ -57,19 +68,31 @@ export default function CarRegistration() {
 
   const fetchColor = () => {
     axios
-      .get(AUTO_API_URL + `api/ColorAvto/GetColorAvtoes`)
+      .get(AUTO_API_URL + `api/ColorAvto/GetColorAvtoes`, {
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      })
       .then((resp) => setColors(resp.data));
   };
 
   const fetchBodyTypes = () => {
     axios
-      .get(AUTO_API_URL + `GetBodyTypes`)
+      .get(AUTO_API_URL + `GetBodyTypes`, {
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      })
       .then((resp) => setBodyTypes(resp.data));
   };
 
   const fetchRudders = () => {
     axios
-      .get(AUTO_API_URL + `GetRudders`)
+      .get(AUTO_API_URL + `GetRudders`, {
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      })
       .then((resp) => setRudders(resp.data));
   };
 
@@ -84,7 +107,12 @@ export default function CarRegistration() {
           &Power=${inputValues.power}
           &ColorId=${inputValues.color}
           &BodyTypeId=${inputValues.bodyTypeId}
-          &RudderId=${inputValues.rudderId}`
+          &RudderId=${inputValues.rudderId}`,
+        {
+          headers: {
+            Authorization: localStorage.getItem('token'),
+          },
+        }
       )
       .then((resp) => {
         if (resp.status === 200) {
